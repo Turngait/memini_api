@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('priority');
             $table->foreignId('user_id');
             $table->foreignId('category_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }
