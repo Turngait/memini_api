@@ -4,6 +4,8 @@ use App\Http\Controllers\ActivitiesController;
 use App\Http\Controllers\CategoriesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Events\EmailProcesse;
+use App\Http\Middleware\CheckUserID;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +17,10 @@ use App\Http\Controllers\UserController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-// Route::get('/greeting', function () {
-//     return 'Hello World';
-// })->middleware('check.user_id');
+Route::get('/greeting', function () {
+    EmailProcesse::dispatch('signup');
+    return 'Hello World';
+});
 
 Route::prefix('user')->group(function () {
     Route::post('/signin', [UserController::class, 'signInAction'])->name('signIn');
@@ -33,14 +36,14 @@ Route::prefix('user')->group(function () {
 
 Route::prefix('activities')->group(function () {
     Route::get('/', [ActivitiesController::class, 'getAllActivities'])->name('getAllActivities');
-    Route::post('/', [ActivitiesController::class, 'addActivity'])->name('addActivity');
-    Route::patch('/', [ActivitiesController::class, 'editActivity'])->name('editActivity');
+    Route::post('/', [ActivitiesController::class, 'addActivity'])->name('addActivity')->middleware(CheckUserID::class);
+    Route::patch('/', [ActivitiesController::class, 'editActivity'])->name('editActivity')->middleware(CheckUserID::class);
     Route::delete('/', [ActivitiesController::class, 'deleteActivity'])->name('deleteActivity');
-})->middleware('check.user_id');
+});
 
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoriesController::class, 'getAllCategories'])->name('getAllCategories');
     Route::post('/', [CategoriesController::class, 'addCategory'])->name('addCategory');
     Route::patch('/', [CategoriesController::class, 'editCategory'])->name('editCategory');
     Route::delete('/', [CategoriesController::class, 'deleteCategory'])->name('deleteCategory');
-})->middleware('check.user_id');
+})->middleware('check_user_id');

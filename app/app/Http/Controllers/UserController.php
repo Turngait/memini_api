@@ -11,6 +11,7 @@ use App\Http\Requests\GetUserDataRequest;
 use App\Http\Requests\RestoreUserPassRequest;
 use App\Models\User;
 use App\Models\UserToken;
+use App\Models\Category;
 
 class UserController extends Controller
 {
@@ -35,6 +36,8 @@ class UserController extends Controller
         $data = $user->signUp($validatedRequest['email'], $validatedRequest['pass'], $validatedRequest['name']);
         if($data["status"] === 202) {
             $token = new UserToken;
+            $category = new Category;
+            $category->addCategory('Default', '', '', $data['id']);
             return response()->json(["status" => $data["status"], "data" => ["id" => $data["id"],"token" => $token->addToken($data["id"]), "msg" => ""]]);
         }
         else if($data["status"] === 409) {

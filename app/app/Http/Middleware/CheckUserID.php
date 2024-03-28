@@ -18,11 +18,13 @@ class CheckUserID
     {
         if(!$request->headers->get('user_token')) return response()->json(["status" => false, "id" => null, "token" => "", "msg" => "Wrong user token"], 403);
         
-        $user_id = UserToken::where('token', '=', $request->headers->get('user_token'))->value('user_id');
-        if(!$user_id) return response()->json(["status" => false, "id" => null, "token" => "", "msg" => "Wrong user token"], 403);
-        $response = $next($request);
-        $response->headers->set('user_id', $user_id);
+        $user_id = UserToken::where('token', '=', $request->headers->get('user_token'))->first()->value('user_id');
 
-        return $response;
+        if(!$user_id) return response()->json(["status" => false, "id" => null, "token" => "", "msg" => "Wrong user token"], 403);
+
+        $request->headers->add(['user_id' => $user_id]);
+
+
+        return $next($request);
     }
 }
